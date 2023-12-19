@@ -1,6 +1,9 @@
 ## CentOS 7 base image
 FROM centos:7
 
+#Update the package manager and install necessary dependencies
+RUN yum -y update && yum -y install curl sudo
+
 ## Install Node.js
 RUN curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
 RUN yum install -y nodejs
