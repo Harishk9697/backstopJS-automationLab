@@ -10,6 +10,9 @@ RUN yum update -y && yum install -y \
 ## Install backstopJS
 RUN npm install -g backstopjs
 
+## Install Git
+RUN apt-get update && apt-get install -y git
+
 RUN mkdir /vrt
 COPY . /vrt
 WORKDIR /vrt
