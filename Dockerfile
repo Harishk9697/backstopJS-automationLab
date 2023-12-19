@@ -2,10 +2,10 @@
 FROM centos:7
 
 ## Install Node.js
-#RUN curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
-#RUN yum install -y nodejs
-RUN yum update -y && yum install -y \
-    git npm nodejs
+RUN curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+RUN yum install -y nodejs
+#RUN yum update -y && yum install -y \
+#    git npm nodejs
 
 ## Install backstopJS
 RUN npm install -g backstopjs
