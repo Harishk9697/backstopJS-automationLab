@@ -5,7 +5,7 @@ FROM centos:7
 RUN yum update -y && yum install -y curl sudo
 
 ## Install Node.js
-RUN curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+RUN curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 RUN yum install -y nodejs
 #RUN yum update -y && yum install -y \
 #    git npm nodejs
@@ -17,7 +17,7 @@ RUN npm install -g backstopjs
 RUN yum install -y git
 
 RUN mkdir /vrt
-COPY . /vrt
+#COPY . /vrt
 WORKDIR /vrt
 
 ## Set variable for clone url
@@ -30,7 +30,22 @@ Run git clone --single-branch --branch $BRANCH_NAME $GITHUB_URL /vrt
 
 WORKDIR /vrt
 
+## List the files
+RUN ls /vrt/backstop_data
+
 ## RUN refernce command
 RUN backstop reference --config="backstop.json"
 ## RUN test command
 Run backstop test --config="backstop.json"
+
+## List the files
+RUN ls /vrt/backstop_data
+
+## Copy generated references to s3 bucket
+RUN aws s3 cp /vrt/backstop_data/bitmaps_reference s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/
+
+## Copy generated test images to s3 bucket
+RUN aws s3 cp /vrt/backstop_data/bitmaps_test s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/
+
+## Copy generated html report to s3 bucket
+RUN aws s3 cp /vrt/backstop_data/html_report s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/
