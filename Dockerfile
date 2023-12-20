@@ -36,8 +36,9 @@ Run git clone --single-branch --branch $BRANCH_NAME $GITHUB_URL /vrt
 
 WORKDIR /vrt
 
-## Download browsers
-Run npx playwright install
+## Install dependencies and browsers
+RUN npx @playwright/test install
+Run npx playwright install-deps
 
 ## List the files
 RUN ls /vrt/backstop_data
