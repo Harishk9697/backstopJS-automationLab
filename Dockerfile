@@ -2,7 +2,7 @@
 FROM centos:7
 
 #Update the package manager and install necessary dependencies
-RUN yum -y update && yum -y install curl sudo
+RUN yum update -y && yum install -y curl sudo
 
 ## Install Node.js
 RUN curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
@@ -14,7 +14,7 @@ RUN yum install -y nodejs
 RUN npm install -g backstopjs
 
 ## Install Git
-RUN apt-get update && apt-get install -y git
+RUN yum install -y git
 
 RUN mkdir /vrt
 COPY . /vrt
@@ -31,6 +31,6 @@ Run git clone --single-branch --branch $BRANCH_NAME $GITHUB_URL /vrt
 WORKDIR /vrt
 
 ## RUN refernce command
-RUN backstop reference
+RUN backstop reference --config="backstop.json"
 ## RUN test command
-Run backstop test
+Run backstop test --config="backstop.json"
