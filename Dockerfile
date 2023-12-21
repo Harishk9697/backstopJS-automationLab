@@ -1,6 +1,9 @@
 ## Use base image of playwright
 FROM mcr.microsoft.com/playwright:v1.24.0-focal AS builder
 
+USER root
+RUN mkdir /vrt
+COPY . /vrt
 WORKDIR /vrt
 
 ## Install browser
