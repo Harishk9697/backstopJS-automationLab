@@ -1,22 +1,7 @@
-## Use base image of playwright
-#FROM mcr.microsoft.com/playwright:v1.24.0-focal AS builder
-
-#USER root
-#RUN mkdir /vrt
-#COPY . /vrt
-#WORKDIR /vrt
-
-## Install browser
-#RUN npx @playwright/test install
-
-## Install dependencies
-#Run npx playwright install-deps
-
 ## CentOS 7 base image
-FROM centos:7
+FROM centos:7 AS centos
 
 #COPY --from=builder /vrt /vrt
-#COPY --from=builder /ms-playwright /ms-playwright
 
 USER root
 RUN mkdir /vrt
@@ -30,54 +15,67 @@ RUN yum update -y && yum install -y curl sudo
 RUN curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 RUN yum install -y nodejs
 
+## Install Git
+RUN yum install -y git
+
+## Install browser
+#RUN npx @playwright/test install
+
+## Install chromium browser dependencies
+#RUN yum update -y && \
+#    yum install -y alsa-lib \
+#    at-spi2-atk  \
+#    at-spi2-core \
+#    atk \
+#    bash \
+#    cairo \
+#    cups-libs \
+#    dbus-libs \
+#    expat \
+#    flac-libs \
+#    gdk-pixbuf2 \
+#    glib2 \
+#    glibc \
+#    gtk3 \
+#    libX11 \
+#    libXcomposite \
+#    libXdamage \
+#    libXext \
+#    libXfixes \
+#    libXrandr \
+#    libXtst \
+#    libcanberra-gtk3 \
+#    libdrm \
+#    libgcc \
+#    libstdc++ \
+#    libxcb \
+#    libxkbcommon \
+#    libxshmfence \
+#    libxslt \
+#    mesa-libgbm \
+#    nspr \
+#    nss \
+#    nss-util \
+#    pango \
+#    policycoreutils \
+#    policycoreutils-python-utils \
+#    zlib
+
+## Use base image of playwright
+FROM mcr.microsoft.com/playwright:v1.24.0-focal AS builder
+
+COPY --from=centos /vrt /vrt
+
+WORKDIR /vrt
+
+RUN apt-get update && \
+    apt-get install -y curl unzip
+
 ## Install browser
 RUN npx @playwright/test install
 
-## Install chromium browser dependencies
-RUN yum update -y && \
-    yum install -y alsa-lib \
-    at-spi2-atk  \
-    at-spi2-core \
-    atk \
-    bash \
-    cairo \
-    cups-libs \
-    dbus-libs \
-    expat \
-    flac-libs \
-    gdk-pixbuf2 \
-    glib2 \
-    glibc \
-    gtk3 \
-    libX11 \
-    libXcomposite \
-    libXdamage \
-    libXext \
-    libXfixes \
-    libXrandr \
-    libXtst \
-    libcanberra-gtk3 \
-    libdrm \
-    libgcc \
-    libstdc++ \
-    libxcb \
-    libxkbcommon \
-    libxshmfence \
-    libxslt \
-    mesa-libgbm \
-    nspr \
-    nss \
-    nss-util \
-    pango \
-    policycoreutils \
-    policycoreutils-python-utils \
-    zlib
-
-## Unzip installation
-RUN yum install -y unzip
-
-## Install Git
-RUN yum install -y git
+## Install dependencies
+Run npx playwright install-deps
 
 ## Install aws cli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
