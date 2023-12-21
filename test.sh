@@ -48,7 +48,7 @@ catch() {
 
 finally() {
     ## Copy generated report to s3 bucket
-    aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/ --exclude "*/engine_scripts/*"
+    aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/ --exclude "engine_scripts/*"
 }
 
 try
