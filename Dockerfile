@@ -16,6 +16,7 @@ Run npx playwright install-deps
 FROM centos:7
 
 COPY --from=builder /vrt /vrt
+COPY --from=builder /ms-playwright /ms-playwright
 
 WORKDIR /vrt
 
@@ -25,6 +26,9 @@ RUN yum update -y && yum install -y curl sudo
 ## Install Node.js
 RUN curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 RUN yum install -y nodejs
+
+## Install browser
+RUN npx @playwright/test install
 
 ## Unzip installation
 RUN yum install -y unzip
@@ -41,6 +45,9 @@ RUN aws --version
 
 ## Install backstopJS
 RUN npm install -g backstopjs
+
+## Make the script executable
+RUN chmod +x test.sh
 
 ## Default command to execute playwright test
 CMD ["sh", "test.sh"]
