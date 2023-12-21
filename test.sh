@@ -8,7 +8,8 @@ set -e
 
 folder_to_cleanup="/vrt/backstopJS"
 
-if [ -d "$folder_to_cleanup"]; then
+if [ -d "$folder_to_cleanup"]
+then
     echo "cleaning up folder $folder_to_cleanup"
     rm -rf "$folder_to_cleanup"
 else
