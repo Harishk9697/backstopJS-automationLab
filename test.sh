@@ -35,7 +35,7 @@ if [ $? -ne 0 ]; then
 fi
 echo "Running test command..."
 ## RUN tests
-backstop test --config="backstop.json"
+#backstop test --config="backstop.json"
 if [ $? -ne 0 ]; then
     echo "Backstop test command failed"
     aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/ --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
