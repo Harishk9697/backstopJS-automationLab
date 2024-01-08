@@ -1,27 +1,5 @@
 ## CentOS 7 base image
-#FROM centos:7 AS centos
-
-#COPY --from=builder /vrt /vrt
-
-#USER root
-#RUN mkdir /vrt
-#COPY . /vrt
-#WORKDIR /vrt
-
-#Update the package manager and install necessary dependencies
-#RUN yum update -y && yum install -y curl sudo
-
-## Install Node.js
-#RUN curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
-#RUN yum install -y nodejs
-
-## Install Git
-#RUN yum install -y git
-
-## Use base image of playwright
-FROM mcr.microsoft.com/playwright:v1.24.0-focal AS builder
-
-#COPY --from=centos /vrt /vrt
+FROM ubuntu:latest
 
 USER root
 RUN mkdir /vrt
@@ -31,7 +9,8 @@ WORKDIR /vrt
 RUN apt-get update && \
     apt-get install -y curl unzip git sudo
 
-RUN apt-get install nodejs npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash -
+RUN apt-get install -y nodejs
 
 ## Install browser
 RUN npx @playwright/test install
