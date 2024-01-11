@@ -27,7 +27,7 @@ if [ $? -ne 0 ]; then
 fi
 
 backstop init
-cp -r ./Director_Diverse/backstop_data/engine_scripts ./backstop_data/
+cp -r ./BrandsPortal/backstop_data/engine_scripts ./backstop_data/
 
 
 #echo "Install npm"
@@ -36,23 +36,23 @@ cp -r ./Director_Diverse/backstop_data/engine_scripts ./backstop_data/
 
 echo "Running reference command..."
 ## RUN backstop reference
-backstop reference --config="./Director_Diverse/backstop.json"
+backstop reference --config="./BrandsPortal/backstop.json"
 #backstop reference --config="backstop.json"
 if [ $? -ne 0 ]; then
     echo "Backstop reference command failed"
 fi
-Sleep 5
+sleep 5
 echo "Running test command..."
 ## RUN tests
-backstop test --config="./Director_Diverse/backstop.json"
+backstop test --config="./BrandsPortal/backstop.json"
 if [ $? -ne 0 ]; then
     echo "Backstop test command failed"
-    Sleep 5
-    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/Director_Diverse --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+    sleep 5
+    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
 else
     echo "Backstop test command passed"
-    Sleep 5
-    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/Director_Diverse --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+    sleep 5
+    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
 fi
 
 #aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/BrandsPortal/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/Backstop_JS_SPT_report/ --exclude "engine_scripts/*"
