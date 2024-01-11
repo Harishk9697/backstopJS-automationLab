@@ -36,7 +36,7 @@ fi
 cp -r ./backstopJS/backstop_data/engine_scripts ./backstop_data/
 echo "Running reference command..."
 ## RUN backstop reference
-backstop reference --config="./backstopJS/backstopTesting1.json"
+backstop reference --config="./backstopJS/backstopTesting.json"
 #backstop reference --config="backstop.json"
 if [ $? -ne 0 ]; then
     echo "Backstop reference command failed"
@@ -44,7 +44,7 @@ fi
 sleep 5
 echo "Running test command..."
 ## RUN tests
-backstop test --config="./backstopJS/backstopTesting1.json"
+backstop test --config="./backstopJS/backstopTesting.json"
 if [ $? -ne 0 ]; then
     echo "Backstop test command failed"
     sleep 5
