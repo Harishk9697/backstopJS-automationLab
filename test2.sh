@@ -35,6 +35,8 @@ fi
 #npm install
 for folder in /vrt/backstopJS/*/; do
     cp -r $folder/backstop_data/engine_scripts ./backstop_data/
+    folder_name=$(basename "$folder")
+    echo "Folder name is: $folder_name"
     echo "Running reference command..."
     ## RUN backstop reference
     backstop reference --config="$folder/backstop.json"
@@ -49,11 +51,11 @@ for folder in /vrt/backstopJS/*/; do
     if [ $? -ne 0 ]; then
         echo "Backstop test command failed"
         sleep 5
-        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/$folder_name --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
     else
         echo "Backstop test command passed"
         sleep 5
-        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/$folder_name --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
     fi
 done
 
