@@ -45,7 +45,7 @@ RUN aws --version
 RUN npm install -g backstopjs
 
 ## Make the script executable
-RUN chmod +x test.sh
+RUN chmod +x test2.sh
 
 ## Default command to execute playwright test
 CMD ["sh", "test2.sh"]
