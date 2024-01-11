@@ -48,4 +48,4 @@ RUN npm install -g backstopjs
 RUN chmod +x test.sh
 
 ## Default command to execute playwright test
-CMD ["sh", "test.sh"]
+CMD ["sh", "test2.sh"]
