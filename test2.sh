@@ -49,11 +49,11 @@ for folder in /vrt/backstopJS/*/; do
     if [ $? -ne 0 ]; then
         echo "Backstop test command failed"
         sleep 5
-        aws s3 cp --acl bucket-owner-full-control --recursive $folder/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
     else
         echo "Backstop test command passed"
         sleep 5
-        aws s3 cp --acl bucket-owner-full-control --recursive $folder/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+        aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/BackstopJSReport/BrandsPortal --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
     fi
 done
 
