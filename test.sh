@@ -48,11 +48,11 @@ backstop test --config="./backstopJS/backstopTesting.json"
 if [ $? -ne 0 ]; then
     echo "Backstop test command failed"
     sleep 5
-    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://internationalportals/aut-vrt-ip/backstop_data/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://internationalportals/aut-vrt-ip/Firefox_report_spt --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
 else
     echo "Backstop test command passed"
     sleep 5
-    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://internationalportals/aut-vrt-ip/backstop_data/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+    aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://internationalportals/aut-vrt-ip/Firefox_report_spt --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
 fi
 
 #aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/BrandsPortal/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/Backstop_JS_SPT_report/ --exclude "engine_scripts/*"
