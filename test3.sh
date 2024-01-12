@@ -30,12 +30,11 @@ if [ $? -ne 0 ]; then
     echo "Command Git clone failed"
 fi
 
-cp -r /vrt/backstopJS/backstop_data/engine_scripts ./backstop_data/
 #echo "Install npm"
 ## Install dependencies
 #npm install
 for folder in /vrt/backstopJS/BackstopJS_JSON_Files/Firefox/*/; do
-    #cp -r $folder/backstop_data/engine_scripts ./backstop_data/
+    cp -r /vrt/backstopJS/backstop_data/engine_scripts ./backstop_data/
     folder_name=$(basename "$folder")
     echo "Folder name is: $folder_name"
     echo "Running reference command..."
@@ -58,6 +57,7 @@ for folder in /vrt/backstopJS/BackstopJS_JSON_Files/Firefox/*/; do
         sleep 5
         aws s3 cp --acl bucket-owner-full-control --recursive ./backstop_data s3://internationalportals/aut-vrt-ip/IP_Firefox_report/$folder_name --exclude "engine_scripts/*" && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
     fi
+    rm -rf ./backstop_data/*
 done
 
 #aws s3 cp --acl bucket-owner-full-control --recursive /vrt/backstopJS/BrandsPortal/backstop_data s3://tf-rf-scripts-spe-qaqc-bucket/Backstop_JS_SPT_report/ --exclude "engine_scripts/*"
