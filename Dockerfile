@@ -28,8 +28,13 @@ WORKDIR /vrt
 RUN apt-get update && \
     apt-get install -y curl unzip
 
+
+#playwright dependencies
+RUN npm install
+
 ## Install browser
-RUN npx @playwright/test install
+#RUN npx @playwright/test install
+RUN npx playwright install
 
 ## Install dependencies
 Run npx playwright install-deps
