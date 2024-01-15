@@ -28,7 +28,6 @@ WORKDIR /vrt
 RUN apt-get update && \
     apt-get install -y curl unzip
 
-
 #playwright dependencies
 RUN npm install
 
