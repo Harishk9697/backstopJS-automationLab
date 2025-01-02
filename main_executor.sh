@@ -6,6 +6,7 @@ DEVICE_POOL_NAME="pixel 4a"
 TEST_SPEC_NAME="androidTestNGXML.yml"
 S3_BUCKET="tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
 APK_FILE="app-release.apk"
+DEPENDENCY_ZIP="zip-with-dependencies.zip"
 #IPA_FILE="path/to/your.ipa"
 
 # Create a zip test package
@@ -15,14 +16,18 @@ echo "Creating zip test package..."
 PROJECT_ARN=$(aws devicefarm list-projects --query "projects[?name=='$PROJECT_NAME'].arn" --output text)
 echo "Project arn is : $PROJECT_ARN"
 
+# Download APK/IPA from S3
+echo "Downloading Zip from S3 and uploading to Device Farm..."
+aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
+
 # Upload the package to Device Farm
 echo "Uploading test package to Device Farm..."
-TEST_PACKAGE_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "zip-with-dependencies.zip" --type "APPIUM_JAVA_TESTNG_TEST_PACKAGE")
+TEST_PACKAGE_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$DEPENDENCY_ZIP" --type "APPIUM_JAVA_TESTNG_TEST_PACKAGE")
 TEST_PACKAGE_UPLOAD_ARN=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.arn')
 TEST_PACKAGE_UPLOAD_URL=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.url')
 echo "Test Package Upload arn is : $TEST_PACKAGE_UPLOAD_ARN"
 
-curl -T zip-with-dependencies.zip $TEST_PACKAGE_UPLOAD_URL
+curl -T $DEPENDENCY_ZIP $TEST_PACKAGE_UPLOAD_URL
 
 # Download APK/IPA from S3
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
