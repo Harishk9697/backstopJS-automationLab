@@ -22,7 +22,7 @@ TEST_PACKAGE_UPLOAD_ARN=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.arn')
 TEST_PACKAGE_UPLOAD_URL=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.url')
 echo "Test Package Upload arn is : $TEST_PACKAGE_UPLOAD_ARN"
 
-curl -T "zip-with-dependencies.zip" "$TEST_PACKAGE_UPLOAD_URL"
+curl -T zip-with-dependencies.zip $TEST_PACKAGE_UPLOAD_URL
 
 # Download APK/IPA from S3
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
