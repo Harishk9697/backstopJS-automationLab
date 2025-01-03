@@ -9,8 +9,8 @@ APK_FILE="app-release.apk"
 DEPENDENCY_ZIP="zip-with-dependencies.zip"
 #IPA_FILE="path/to/your.ipa"
 
-aws s3 cp s3://$S3_BUCKET/SP_Connect_Repo/aut-appiumjava-connect/ . --recursive
-
+echo "Copy Project from S3"
+aws s3 cp --recursive s3://$S3_BUCKET/SP_Connect_Repo/aut-appiumjava-connect/ .
 ls
 
 # Create a zip test package
