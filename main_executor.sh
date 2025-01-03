@@ -23,8 +23,8 @@ PROJECT_ARN=$(aws devicefarm list-projects --query "projects[?name=='$PROJECT_NA
 echo "Project arn is : $PROJECT_ARN"
 
 # Download APK/IPA from S3
-echo "Downloading Zip from S3 and uploading to Device Farm..."
-aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
+#echo "Downloading Zip from S3 and uploading to Device Farm..."
+#aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
 
 # Upload the package to Device Farm
 echo "Uploading test package to Device Farm..."
