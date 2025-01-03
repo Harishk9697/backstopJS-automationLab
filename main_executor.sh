@@ -9,9 +9,15 @@ APK_FILE="app-release.apk"
 DEPENDENCY_ZIP="zip-with-dependencies.zip"
 #IPA_FILE="path/to/your.ipa"
 
+aws s3 cp s3://$S3_BUCKET/SP_Connect_Repo/aut-appiumjava-connect/ . --recursive
+
+ls
+
 # Create a zip test package
 echo "Creating zip test package..."
-#mvn clean package -DskipTests=true
+mvn clean package -DskipTests=true
+
+ls
 
 PROJECT_ARN=$(aws devicefarm list-projects --query "projects[?name=='$PROJECT_NAME'].arn" --output text)
 echo "Project arn is : $PROJECT_ARN"
