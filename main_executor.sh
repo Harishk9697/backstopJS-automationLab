@@ -3,11 +3,11 @@
 # Variables
 PROJECT_NAME="SPConnectAppium"
 DEVICE_POOL_NAME="pixel 4a"
-TEST_SPEC_NAME="androidTestNGXML.yml"
+TEST_SPEC_NAME="iostestngxml.yml"
 S3_BUCKET="tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
 APK_FILE="app-release.apk"
 DEPENDENCY_ZIP="zip-with-dependencies.zip"
-#IPA_FILE="path/to/your.ipa"
+IPA_FILE="SPConnect.ipa"
 
 echo "Copy Project from S3"
 aws s3 cp s3://tf-rf-scripts-spe-qaqc-bucket/SP_Connect_Repo/aut-appiumjava-connect/ . --recursive && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
@@ -23,8 +23,8 @@ PROJECT_ARN=$(aws devicefarm list-projects --query "projects[?name=='$PROJECT_NA
 echo "Project arn is : $PROJECT_ARN"
 
 # Download APK/IPA from S3
-#echo "Downloading Zip from S3 and uploading to Device Farm..."
-#aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
+echo "Downloading Zip from S3 and uploading to Device Farm..."
+aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
 
 # Upload the package to Device Farm
 echo "Uploading test package to Device Farm..."
@@ -37,15 +37,15 @@ curl -T "./target/$DEPENDENCY_ZIP" $TEST_PACKAGE_UPLOAD_URL
 
 # Download APK/IPA from S3
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
-aws s3 cp s3://$S3_BUCKET/$APK_FILE .
+aws s3 cp s3://$S3_BUCKET/$IPA_FILE .
 
 # Upload the APK or IPA to Device Farm
 echo "Uploading APK/IPA file to Device Farm..."
-APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$APK_FILE" --type "ANDROID_APP")
+APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$IPA_FILE" --type "ANDROID_APP")
 APP_UPLOAD_ARN=$(echo $APP_UPLOAD | jq -r '.upload.arn')
 APP_UPLOAD_URL=$(echo $APP_UPLOAD | jq -r '.upload.url')
 
-curl -T $APK_FILE $APP_UPLOAD_URL
+curl -T $IPA_FILE $APP_UPLOAD_URL
 
 # Wait for the uploads to succeed
 while true; do
