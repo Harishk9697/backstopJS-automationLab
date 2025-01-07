@@ -105,6 +105,7 @@ done
 # Fetch the test report
 echo "Fetching the test report..."
 REPORT_URL=$(aws devicefarm get-run --arn $RUN_ARN | jq -r '.run.resultUrl')
+echo "Report URL is: $REPORT_URL"
 
 # Download the test report
 echo "Downloading the test report..."
