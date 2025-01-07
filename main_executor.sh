@@ -3,7 +3,7 @@
 # Variables
 PROJECT_NAME="SPConnectAppium"
 #DEVICE_POOL_NAME="pixel 4a"
-DEVICE_POOL_NAME="iPhone 15 Plus"
+DEVICE_POOL_NAME="iPhone 15 plus 17.4.1"
 TEST_SPEC_NAME="iostestngxml.yml"
 S3_BUCKET="tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
 APK_FILE="app-release.apk"
