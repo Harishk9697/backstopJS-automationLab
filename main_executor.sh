@@ -117,6 +117,23 @@ curl -o customer-artifacts.zip $CUSTOMER_ARTIFACTS_URL
 
 unzip customer-artifacts.zip -d test-report
 
+#Fetch test case execution metadata
+export passed_testcases=$(xmlstarlet sel -t -v "/testng-results/@passed" /app/test-report/Host_Machine_Files/*DEVICEFARM_LOG_DIR/test-output/testng-results.xml)
+export failed_testcases=$(xmlstarlet sel -t -v "/testng-results/@failed" /app/test-report/Host_Machine_Files/*DEVICEFARM_LOG_DIR/test-output/testng-results.xml)
+export skipped_testcases=$(xmlstarlet sel -t -v "/testng-results/@skipped" /app/test-report/Host_Machine_Files/*DEVICEFARM_LOG_DIR/test-output/testng-results.xml)
+export tc_start_time=$(xmlstarlet sel -t -v "/testng-results/suite/@started-at" /app/test-report/Host_Machine_Files/*DEVICEFARM_LOG_DIR/test-output/testng-results.xml)
+export tc_end_time=$(xmlstarlet sel -t -v "/testng-results/suite/@finished-at" /app/test-report/Host_Machine_Files/*DEVICEFARM_LOG_DIR/test-output/testng-results.xml)
+export total_testcases=$((passed_testcases+failed_testcases+skipped_testcases))
+export testcase_status=$( [ "$failed_testcases" -eq 0 ] && echo "success" || echo "failure" )
+
+echo "Passed test case: $passed_testcases"
+echo "Failed test case: $failed_testcases"
+echo "Skipped test case: $skipped_testcases"
+echo "Total Test case: $total_testcases"
+echo "Test case start time: $tc_start_time"
+echo "Test case end time: $tc_end_time"
+echo "Test Case Status: $testcase_status"
+
 # Upload the test report to S3
 echo "Uploading the test report to S3..."
 aws s3 cp --recursive test-report/Host_Machine_Files/ s3://$S3_BUCKET/test-report_$current_datetime
