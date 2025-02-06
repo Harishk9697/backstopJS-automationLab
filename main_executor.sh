@@ -110,23 +110,17 @@ done
 echo "Fetching the test report..."
 
 echo "Listing file artifacts..."
-aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE
+aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --query "artifacts[?name=='Customer Artifacts'].url" --output text
 
-# List log artifacts
-echo "Listing log artifacts..."
-aws devicefarm list-artifacts --arn "$RUN_ARN" --type LOG
-
-# List screenshot artifacts
-echo "Listing screenshot artifacts..."
-aws devicefarm list-artifacts --arn "$RUN_ARN" --type SCREENSHOT
-
-REPORT_URL=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE)
-echo "Report URL is: $REPORT_URL"
+CUSTOMER_ARTIFACTS_URL=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --query "artifacts[?name=='Customer Artifacts'].url" --output text)
+echo "Report URL is: $CUSTOMER_ARTIFACTS_URL"
 
 # Download the test report
 echo "Downloading the test report..."
-curl -o test-report.zip $REPORT_URL
+curl -o customer-artifacts.zip $CUSTOMER_ARTIFACTS_URL
+
+unzip customer-artifacts.zip -d test-report
 
 # Upload the test report to S3
 echo "Uploading the test report to S3..."
-aws s3 cp test-report.zip s3://$S3_BUCKET/test-report_$current_datetime.zip
+aws s3 cp --recursive test-report/Host_Machine_Files/ s3://$S3_BUCKET/test-report_$current_datetime.zip
