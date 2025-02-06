@@ -1,5 +1,5 @@
 # Use Ubuntu as the base image
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Copy project files to the container
 COPY . /app
