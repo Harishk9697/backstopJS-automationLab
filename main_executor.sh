@@ -123,4 +123,4 @@ unzip customer-artifacts.zip -d test-report
 
 # Upload the test report to S3
 echo "Uploading the test report to S3..."
-aws s3 cp --recursive test-report/Host_Machine_Files/ s3://$S3_BUCKET/test-report_$current_datetime.zip
+aws s3 cp --recursive test-report/Host_Machine_Files/ s3://$S3_BUCKET/test-report_$current_datetime
