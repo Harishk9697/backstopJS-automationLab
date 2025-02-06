@@ -108,8 +108,19 @@ done
 
 # Fetch the test report
 echo "Fetching the test report..."
-aws devicefarm list-artifacts --arn $RUN_ARN
-REPORT_URL=$(aws devicefarm list-artifacts --arn $RUN_ARN)
+
+echo "Listing file artifacts..."
+aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE
+
+# List log artifacts
+echo "Listing log artifacts..."
+aws devicefarm list-artifacts --arn "$RUN_ARN" --type LOG
+
+# List screenshot artifacts
+echo "Listing screenshot artifacts..."
+aws devicefarm list-artifacts --arn "$RUN_ARN" --type SCREENSHOT
+
+REPORT_URL=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE)
 echo "Report URL is: $REPORT_URL"
 
 # Download the test report
