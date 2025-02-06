@@ -108,10 +108,6 @@ done
 
 # Fetch the test report
 echo "Fetching the test report..."
-
-echo "Listing file artifacts..."
-aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --query "artifacts[?name=='Customer Artifacts'].url" --output text
-
 CUSTOMER_ARTIFACTS_URL=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --query "artifacts[?name=='Customer Artifacts'].url" --output text)
 echo "Report URL is: $CUSTOMER_ARTIFACTS_URL"
 
