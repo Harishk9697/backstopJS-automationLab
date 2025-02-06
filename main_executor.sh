@@ -86,6 +86,7 @@ RUN=$(aws devicefarm schedule-run --project-arn "$PROJECT_ARN" --app-arn "$APP_U
 echo "Run scheduled successfully!"
 
 RUN_ARN=$(echo $RUN | jq -r '.run.arn')
+echo "Run arn is: $RUN_ARN"
 
 # Wait for the test run to complete
 echo "Waiting for the test run to complete..."
@@ -104,7 +105,8 @@ done
 
 # Fetch the test report
 echo "Fetching the test report..."
-REPORT_URL=$(aws devicefarm get-run --arn $RUN_ARN | jq -r '.run.resultUrl')
+aws devicefarm list-artifacts --arn $RUN_ARN
+REPORT_URL=$(aws devicefarm list-artifacts --arn $RUN_ARN)
 echo "Report URL is: $REPORT_URL"
 
 # Download the test report
