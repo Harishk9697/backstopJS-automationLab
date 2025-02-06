@@ -41,9 +41,10 @@ curl -T "./target/$DEPENDENCY_ZIP" $TEST_PACKAGE_UPLOAD_URL
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
 aws s3 cp s3://$S3_BUCKET/$IPA_FILE .
 
-# Upload the APK or IPA to Device Farm
+# Upload the APK or IPA to Device Farm 
 echo "Uploading APK/IPA file to Device Farm..."
-APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$IPA_FILE" --type "IOS_APP")
+#APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$IPA_FILE" --type "IOS_APP")
+APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$IPA_FILE" --type "ANDROID_APP")
 APP_UPLOAD_ARN=$(echo $APP_UPLOAD | jq -r '.upload.arn')
 APP_UPLOAD_URL=$(echo $APP_UPLOAD | jq -r '.upload.url')
 
