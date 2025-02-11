@@ -12,7 +12,7 @@ DEPENDENCY_ZIP="zip-with-dependencies.zip"
 IPA_FILE="SPConnect.ipa"
 
 echo "Copy Project from S3"
-aws s3 cp s3://tf-rf-scripts-spe-qaqc-bucket/SP_Connect_Repo/aut-appiumjava-connect/ . --recursive && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+aws s3 cp s3://tf-rf-scripts-spe-qaqc-bucket/SP_Connect_Repo/ . --recursive && echo "Copied from s3 bucket" || echo "Copy from s3 bucket failed"
 ls
 
 # Create a zip test package
