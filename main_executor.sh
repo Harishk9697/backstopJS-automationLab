@@ -112,18 +112,18 @@ while true; do
     fi
 done
 
-# Upload the YAML file to Device Farm
-echo "Uploading YAML file to Device Farm..."
-YML_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$YML_FILE" --type "APPIUM_NODE_TEST_SPEC")
-YML_UPLOAD_ARN=$(echo $YML_UPLOAD | jq -r '.upload.arn')
-YML_UPLOAD_URL=$(echo $YML_UPLOAD | jq -r '.upload.url')
-
 # Check if the YAML file already exists and delete it if it does
 EXISTING_YML_ARN=$(aws devicefarm list-uploads --arn "$PROJECT_ARN" --query "uploads[?name=='$YML_FILE'].arn" --output text)
 if [ -n "$EXISTING_YML_ARN" ]; then
     echo "YAML file '$YML_FILE' already exists. Deleting existing file..."
     aws devicefarm delete-upload --arn "$EXISTING_YML_ARN"
 fi
+
+# Upload the YAML file to Device Farm
+echo "Uploading YAML file to Device Farm..."
+YML_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$YML_FILE" --type "APPIUM_NODE_TEST_SPEC")
+YML_UPLOAD_ARN=$(echo $YML_UPLOAD | jq -r '.upload.arn')
+YML_UPLOAD_URL=$(echo $YML_UPLOAD | jq -r '.upload.url')
 
 # Wait for the YAML upload to succeed
 while true; do
