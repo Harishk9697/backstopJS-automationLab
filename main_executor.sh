@@ -2,20 +2,66 @@
 
 # Variables
 PROJECT_NAME="SPConnectAppium"
-DEVICE_POOL_NAME="pixel 4a"
-#DEVICE_POOL_NAME="iPhone 15 plus 17.4.1"
-TEST_SPEC_NAME="androidTestNGXML.yml"
-#TEST_SPEC_NAME="iostestngxml.yml"
-S3_BUCKET="tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
-APK_FILE="app-release.apk"
-DEPENDENCY_ZIP="zip-with-dependencies.zip"
+browser="Google_Pixel_8_14"
+environment="android"
+DEVICE_POOL_NAME=$browser
+S3_BUCKET="s3://tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
+APK_FILE="SPConnect.apk"
 IPA_FILE="SPConnect.ipa"
+DEPENDENCY_ZIP="zip-with-dependencies.zip"
 
 echo "Copy Project from S3"
 aws s3 cp s3://tf-rf-scripts-spe-qaqc-bucket/SP_Connect_Repo/ . --recursive && echo "Copied from s3 bucket" || echo "Copy from s3 bucket failed"
 ls
 
-# Create a zip test package
+passed_testcases=0
+failed_testcases=0
+skipped_testcases=0
+
+# Determine platform and manufacturer based on environment
+if [ "$environment" == "ios" ]; then
+    PLATFORM_VALUE="IOS"
+    MANUFACTURER_VALUE="Apple"
+    YML_FILE="iostestspec.yml"
+    TESTNG_XML_FILE="ios_modules_testng.xml"
+    S3_BUCKET_File_Path="$S3_BUCKET/iOS/SPConnect.ipa"
+    APP_FILE_NAME=$IPA_FILE
+    APP_TYPE="IOS_APP"
+elif [ "$environment" == "android" ]; then
+    PLATFORM_VALUE="ANDROID"
+    MANUFACTURER_VALUE="Google"
+    YML_FILE="androidtestspec.yml"
+    TESTNG_XML_FILE="android_modules_testng.xml"
+    S3_BUCKET_File_Path="$S3_BUCKET/Android/SPConnect.apk"
+    APP_FILE_NAME=$APK_FILE
+    APP_TYPE="ANDROID_APP"
+else
+    echo "Unsupported platform: $environment"
+    exit 1
+fi
+
+# Compile the TestNGXmlGenerator class
+javac -d out -sourcepath src/main/java src/main/java/com/spe/SPConnect/utils/TestNGXmlGenerator.java
+
+# Create the TestNG XML file
+java -cp out com.spe.SPConnect.utils.TestNGXmlGenerator "$environment" "$TESTNG_XML_FILE" "CategoryScreen"
+
+# Replace underscores with spaces
+DEVICE_POOL_NAME_WITH_SPACES="${DEVICE_POOL_NAME//_/ }"
+
+# Extract the last part (version) and remove it from the string
+VERSION=$(echo "$DEVICE_POOL_NAME_WITH_SPACES" | awk '{print $NF}')
+MODEL=$(echo "$DEVICE_POOL_NAME_WITH_SPACES" | sed "s/ $VERSION//")
+
+echo "Model: $MODEL"
+echo "OS Version: $VERSION"
+
+# Read device pool rules template and replace placeholders
+DEVICE_POOL_RULES=$(cat device_pool_rules_template.json | sed "s/{{PLATFORM}}/$PLATFORM_VALUE/g" | sed "s/{{OS_VERSION}}/$VERSION/g" | sed "s/{{MANUFACTURER}}/$MANUFACTURER_VALUE/g" | sed "s/{{MODEL}}/$MODEL/g")
+
+ls
+
+## Create a zip test package
 echo "Creating zip test package..."
 mvn clean package -DskipTests=true
 
@@ -24,10 +70,6 @@ ls
 PROJECT_ARN=$(aws devicefarm list-projects --query "projects[?name=='$PROJECT_NAME'].arn" --output text)
 echo "Project arn is : $PROJECT_ARN"
 
-# Download APK/IPA from S3
-echo "Downloading Zip from S3 and uploading to Device Farm..."
-aws s3 cp s3://$S3_BUCKET/$DEPENDENCY_ZIP .
-
 # Upload the package to Device Farm
 echo "Uploading test package to Device Farm..."
 TEST_PACKAGE_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$DEPENDENCY_ZIP" --type "APPIUM_JAVA_TESTNG_TEST_PACKAGE")
@@ -35,21 +77,23 @@ TEST_PACKAGE_UPLOAD_ARN=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.arn')
 TEST_PACKAGE_UPLOAD_URL=$(echo $TEST_PACKAGE_UPLOAD | jq -r '.upload.url')
 echo "Test Package Upload arn is : $TEST_PACKAGE_UPLOAD_ARN"
 
-#curl -T "./target/$DEPENDENCY_ZIP" $TEST_PACKAGE_UPLOAD_URL
-curl -T "$DEPENDENCY_ZIP" $TEST_PACKAGE_UPLOAD_URL
+curl -T "./target/$DEPENDENCY_ZIP" "$TEST_PACKAGE_UPLOAD_URL"
+
+# Download APK/IPA from S3
+echo "Downloading Zip from S3 and uploading to Device Farm..."
+aws s3 cp $S3_BUCKET/$DEPENDENCY_ZIP .
 
 # Download APK/IPA from S3
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
-aws s3 cp s3://$S3_BUCKET/$APK_FILE .
+aws s3 cp $S3_BUCKET/$APP_FILE_NAME .
 
-# Upload the APK or IPA to Device Farm 
+# Upload the APK or IPA to Device Farm
 echo "Uploading APK/IPA file to Device Farm..."
-#APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$APK_FILE" --type "IOS_APP")
-APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$APK_FILE" --type "ANDROID_APP")
+APP_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$APP_FILE_NAME" --type "$APP_TYPE")
 APP_UPLOAD_ARN=$(echo $APP_UPLOAD | jq -r '.upload.arn')
 APP_UPLOAD_URL=$(echo $APP_UPLOAD | jq -r '.upload.url')
 
-curl -T $APK_FILE $APP_UPLOAD_URL
+curl -T $APP_FILE_NAME $APP_UPLOAD_URL
 
 # Wait for the uploads to succeed
 while true; do
@@ -68,14 +112,56 @@ while true; do
     fi
 done
 
+# Upload the YAML file to Device Farm
+echo "Uploading YAML file to Device Farm..."
+YML_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$YML_FILE" --type "APPIUM_NODE_TEST_SPEC")
+YML_UPLOAD_ARN=$(echo $YML_UPLOAD | jq -r '.upload.arn')
+YML_UPLOAD_URL=$(echo $YML_UPLOAD | jq -r '.upload.url')
+
+# Check if the YAML file already exists and delete it if it does
+EXISTING_YML_ARN=$(aws devicefarm list-uploads --arn "$PROJECT_ARN" --query "uploads[?name=='$YML_FILE'].arn" --output text)
+if [ -n "$EXISTING_YML_ARN" ]; then
+    echo "YAML file '$YML_FILE' already exists. Deleting existing file..."
+    aws devicefarm delete-upload --arn "$EXISTING_YML_ARN"
+fi
+
+# Wait for the YAML upload to succeed
+while true; do
+    YML_UPLOAD_STATUS=$(aws devicefarm get-upload --arn $YML_UPLOAD_ARN | jq -r '.upload.status')
+    echo "YAML Upload status is: $YML_UPLOAD_STATUS"
+    if [[ "$YML_UPLOAD_STATUS" == "SUCCEEDED" ]]; then
+        break
+    elif [[ "$YML_UPLOAD_STATUS" == "FAILED" ]]; then
+        echo "YAML upload failed"
+        exit 1
+    else
+        echo "Waiting for YAML upload to complete..."
+        sleep 10
+    fi
+done
+
 # Fetch the ARN of the test spec
-echo "Fetching ARN of the test spec..."
-TEST_SPEC_ARN=$(aws devicefarm list-uploads --arn "$PROJECT_ARN" --query "uploads[?name=='$TEST_SPEC_NAME'].arn" --output text)
-echo "Test spec arn is: $TEST_SPEC_ARN"
+#echo "Fetching ARN of the test spec..."
+#YML_UPLOAD_ARN=$(aws devicefarm list-uploads --arn "$PROJECT_ARN" --query "uploads[?name=='$TEST_SPEC_NAME'].arn" --output text)
+echo "Test spec arn is: $YML_UPLOAD_ARN"
 
 # Fetch the ARN of the device pool
 echo "Fetching ARN of the device pool..."
+# Check if the device pool exists
 DEVICE_POOL_ARN=$(aws devicefarm list-device-pools --arn "$PROJECT_ARN" --query "devicePools[?name=='$DEVICE_POOL_NAME'].arn" --output text)
+
+# Create the device pool if it does not exist
+if [ -z "$DEVICE_POOL_ARN" ]; then
+    echo "Device pool '$DEVICE_POOL_NAME' does not exist. Creating device pool..."
+    DEVICE_POOL_ARN=$(aws devicefarm create-device-pool --project-arn "$PROJECT_ARN" --name "$DEVICE_POOL_NAME" --description "$DEVICE_POOL_DESCRIPTION" --rules "$DEVICE_POOL_RULES" --query "devicePool.arn" --output text)
+    echo "Device pool created with ARN: $DEVICE_POOL_ARN"
+else
+    echo "Device pool '$DEVICE_POOL_NAME' already exists with ARN: $DEVICE_POOL_ARN"
+fi
+
+# Export the device pool ARN for use in other parts of the script
+export DEVICE_POOL_ARN
+
 echo "Device Pool arn is: $DEVICE_POOL_ARN"
 
 export TZ=Asia/Kolkata
@@ -84,7 +170,7 @@ current_datetime=$(date +'%Y-%m-%d_%H:%M:%S')
 
 # Schedule the run
 echo "Scheduling the run..."
-RUN=$(aws devicefarm schedule-run --project-arn "$PROJECT_ARN" --app-arn "$APP_UPLOAD_ARN" --device-pool-arn "$DEVICE_POOL_ARN" --name "TestRun_$current_datetime" --test testSpecArn="$TEST_SPEC_ARN",type=APPIUM_JAVA_TESTNG,testPackageArn="$TEST_PACKAGE_UPLOAD_ARN")
+RUN=$(aws devicefarm schedule-run --project-arn "$PROJECT_ARN" --app-arn "$APP_UPLOAD_ARN" --device-pool-arn "$DEVICE_POOL_ARN" --name "TestRun_$current_datetime" --test testSpecArn="$YML_UPLOAD_ARN",type=APPIUM_JAVA_TESTNG,testPackageArn="$TEST_PACKAGE_UPLOAD_ARN")
 
 echo "Run scheduled successfully!"
 
@@ -115,6 +201,8 @@ echo "Report URL is: $CUSTOMER_ARTIFACTS_URL"
 echo "Downloading the test report..."
 curl -o customer-artifacts.zip $CUSTOMER_ARTIFACTS_URL
 
+#Unzip the test report
+echo "Unzip the test report..."
 unzip customer-artifacts.zip -d test-report
 
 #Fetch test case execution metadata
@@ -136,4 +224,4 @@ echo "Test Case Status: $testcase_status"
 
 # Upload the test report to S3
 echo "Uploading the test report to S3..."
-aws s3 cp --recursive test-report/Host_Machine_Files/ s3://$S3_BUCKET/test-report_$current_datetime
+aws s3 cp --acl bucket-owner-full-control --recursive test-report/Host_Machine_Files/ $S3_BUCKET/test-report_$current_datetime && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
