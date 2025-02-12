@@ -58,7 +58,7 @@ echo "Model: $MODEL"
 echo "OS Version: $VERSION"
 
 # Read device pool rules template and replace placeholders
-DEVICE_POOL_RULES=$(cat device_pool_rules_template.json | sed "s/PLATFORM_VALUE/\"$PLATFORM_VALUE\"/g" | sed "s/OS_VERSION_VALUE/\"$VERSION\"/g" | sed "s/MANUFACTURER_VALUE/\"$MANUFACTURER_VALUE\"/g" | sed "s/MODEL_VALUE/\"$MODEL\"/g")
+DEVICE_POOL_RULES=$(cat device_pool_rules_template.json | sed "s/PLATFORM_VALUE/$PLATFORM_VALUE/g" | sed "s/OS_VERSION_VALUE/$VERSION/g" | sed "s/MANUFACTURER_VALUE/$MANUFACTURER_VALUE/g" | sed "s/MODEL_VALUE/$MODEL/g")
 #DEVICE_POOL_RULES=$(jq --arg platform "$PLATFORM_VALUE" --arg version "$VERSION" --arg manufacturer "$MANUFACTURER_VALUE" --arg model "$MODEL" '
 #    .[] |= (.value = if .value == "PLATFORM_VALUE" then $platform
 #             elif .value == "OS_VERSION_VALUE" then $version
