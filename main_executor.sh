@@ -6,7 +6,7 @@ browser="Google_Pixel_8_14"
 environment="android"
 DEVICE_POOL_NAME=$browser
 S3_BUCKET="s3://tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
-APK_FILE="SPConnect.apk"
+APK_FILE="app-release.apk"
 IPA_FILE="SPConnect.ipa"
 DEPENDENCY_ZIP="zip-with-dependencies.zip"
 
@@ -24,7 +24,7 @@ if [ "$environment" == "ios" ]; then
     MANUFACTURER_VALUE="Apple"
     YML_FILE="iostestspec.yml"
     TESTNG_XML_FILE="ios_modules_testng.xml"
-    S3_BUCKET_File_Path="$S3_BUCKET/iOS/SPConnect.ipa"
+    S3_BUCKET_File_Path="$S3_BUCKET/SPConnect.ipa"
     APP_FILE_NAME=$IPA_FILE
     APP_TYPE="IOS_APP"
 elif [ "$environment" == "android" ]; then
@@ -32,7 +32,7 @@ elif [ "$environment" == "android" ]; then
     MANUFACTURER_VALUE="Google"
     YML_FILE="androidtestspec.yml"
     TESTNG_XML_FILE="android_modules_testng.xml"
-    S3_BUCKET_File_Path="$S3_BUCKET/Android/SPConnect.apk"
+    S3_BUCKET_File_Path="$S3_BUCKET/app-release.apk"
     APP_FILE_NAME=$APK_FILE
     APP_TYPE="ANDROID_APP"
 else
