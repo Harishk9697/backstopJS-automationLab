@@ -85,7 +85,7 @@ aws s3 cp $S3_BUCKET/$DEPENDENCY_ZIP .
 
 # Download APK/IPA from S3
 echo "Downloading APK/IPA from S3 and uploading to Device Farm..."
-aws s3 cp $S3_BUCKET/$APP_FILE_NAME .
+aws s3 cp $S3_BUCKET_File_Path .
 
 # Upload the APK or IPA to Device Farm
 echo "Uploading APK/IPA file to Device Farm..."
