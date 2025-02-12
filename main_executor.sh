@@ -125,6 +125,8 @@ YML_UPLOAD=$(aws devicefarm create-upload --project-arn "$PROJECT_ARN" --name "$
 YML_UPLOAD_ARN=$(echo $YML_UPLOAD | jq -r '.upload.arn')
 YML_UPLOAD_URL=$(echo $YML_UPLOAD | jq -r '.upload.url')
 
+curl -T $YML_FILE $YML_UPLOAD_URL
+
 # Wait for the YAML upload to succeed
 while true; do
     YML_UPLOAD_STATUS=$(aws devicefarm get-upload --arn $YML_UPLOAD_ARN | jq -r '.upload.status')
