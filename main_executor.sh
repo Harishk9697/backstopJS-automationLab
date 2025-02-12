@@ -9,6 +9,7 @@ S3_BUCKET="s3://tf-rf-scripts-spe-qaqc-bucket/SPConnect_App"
 APK_FILE="app-release.apk"
 IPA_FILE="SPConnect.ipa"
 DEPENDENCY_ZIP="zip-with-dependencies.zip"
+DEVICE_POOL_DESCRIPTION="Test Description"
 
 echo "Copy Project from S3"
 aws s3 cp s3://tf-rf-scripts-spe-qaqc-bucket/SP_Connect_Repo/ . --recursive && echo "Copied from s3 bucket" || echo "Copy from s3 bucket failed"
@@ -58,8 +59,17 @@ echo "OS Version: $VERSION"
 
 # Read device pool rules template and replace placeholders
 DEVICE_POOL_RULES=$(cat device_pool_rules_template.json | sed "s/PLATFORM_VALUE/\"$PLATFORM_VALUE\"/g" | sed "s/OS_VERSION_VALUE/\"$VERSION\"/g" | sed "s/MANUFACTURER_VALUE/\"$MANUFACTURER_VALUE\"/g" | sed "s/MODEL_VALUE/\"$MODEL\"/g")
-
+#DEVICE_POOL_RULES=$(jq --arg platform "$PLATFORM_VALUE" --arg version "$VERSION" --arg manufacturer "$MANUFACTURER_VALUE" --arg model "$MODEL" '
+#    .[] |= (.value = if .value == "PLATFORM_VALUE" then $platform
+#             elif .value == "OS_VERSION_VALUE" then $version
+#             elif .value == "MANUFACTURER_VALUE" then $manufacturer
+#             elif .value == "MODEL_VALUE" then $model
+#             else .value end)' device_pool_rules_template.json)
+             
 ls
+
+echo "Device Pool Rule is"
+echo $DEVICE_POOL_RULES
 
 ## Create a zip test package
 echo "Creating zip test package..."
