@@ -68,8 +68,6 @@ DEVICE_POOL_RULES=$(cat device_pool_rules_template.json | sed "s/PLATFORM_VALUE/
              
 ls
 
-echo "Device Pool Rule is"
-echo $DEVICE_POOL_RULES
 
 ## Create a zip test package
 echo "Creating zip test package..."
@@ -161,6 +159,9 @@ echo "Test spec arn is: $YML_UPLOAD_ARN"
 echo "Fetching ARN of the device pool..."
 # Check if the device pool exists
 DEVICE_POOL_ARN=$(aws devicefarm list-device-pools --arn "$PROJECT_ARN" --query "devicePools[?name=='$DEVICE_POOL_NAME'].arn" --output text)
+
+echo "---Device Pool Rule is---"
+echo $DEVICE_POOL_RULES
 
 # Create the device pool if it does not exist
 if [ -z "$DEVICE_POOL_ARN" ]; then
