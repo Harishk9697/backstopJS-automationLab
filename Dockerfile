@@ -11,7 +11,7 @@ RUN ls
 
 # Install dependencies
 RUN apk update && \
-    apk add --no-cache wget unzip git curl aws-cli openjdk11 && \
+    apk add --no-cache wget unzip git curl gcc musl-dev python3-dev libffi-dev aws-cli rpm2cpio openjdk11 && \
     python3 -m venv /app && \
     source /app/bin/activate
 
