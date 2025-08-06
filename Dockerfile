@@ -9,8 +9,6 @@ WORKDIR /app
 
 RUN ls
 
-WORKDIR /playwright
-
 RUN apt-get update || apt-get update && \
     apt-get install -y curl unzip sudo=1.9.9-1ubuntu2.5 openjdk-11-jdk jq xmlstarlet iputils-ping || apt-get install -y curl unzip sudo openjdk-11-jdk jq xmlstarlet  iputils-ping && \
     curl -sL https://deb.nodesource.com/setup_22.x | sudo bash -  && \
@@ -46,6 +44,7 @@ RUN chmod +x main_executor.sh
 
 ## Default command to execute test
 CMD ["./main_executor.sh"]
+
 
 
 
