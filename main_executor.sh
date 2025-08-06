@@ -55,13 +55,8 @@ run_command "npm install exceljs || true"
 run_command "npm install csv-parse || true"    
 run_command "npm install moment --save"
 
-if [[ -z "$test_name" ]]; then
-    echo "Running test modules wise"
-    run_command "npm run awsTest || true" 
-else
-    echo "Running specific test: $test_name"
-    run_command "npm run awsSingleTest || true"
-fi
+echo "Running popup test"
+run_command "npm run awsTestpopup || true"
 
 echo "Playwright version is:"
 npx playwright --version
