@@ -34,7 +34,10 @@ RUN npm install playwright@1.51.0 --save-dev
 RUN curl -L -o ibm-aspera-connect.tar.gz "https://d3gcli72yxqn2z.cloudfront.net/downloads/connect/latest/bin/ibm-aspera-connect_4.2.16.884-HEAD_linux_x86_64.tar.gz" \
     && tar -xzf ibm-aspera-connect.tar.gz -C /opt \
     && rm ibm-aspera-connect.tar.gz
+    
+RUN chmod +x main_executor.sh
 
 ## Default command to execute test
 CMD ["./main_executor.sh"]
+
 
