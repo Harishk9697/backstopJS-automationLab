@@ -2,10 +2,10 @@
 FROM mcr.microsoft.com/playwright:v1.51.0-jammy
 
 # Copy project files to the container
-COPY . /app
+COPY . /playwright
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /playwright
 
 RUN ls
 
@@ -44,6 +44,7 @@ RUN chmod +x main_executor.sh
 
 ## Default command to execute test
 CMD ["./main_executor.sh"]
+
 
 
 
