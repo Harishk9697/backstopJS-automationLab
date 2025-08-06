@@ -63,9 +63,9 @@ npx playwright --version
 
 echo "list the files"
 ls -ltr
-aws s3 cp --acl bucket-owner-full-control --recursive /playwright/test-results s3://$REPORT_BUCKET/$repo/$branch/$task_start_time/$ecs_task_id/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
-aws s3 cp --acl bucket-owner-full-control --recursive /playwright/playwright-report s3://$REPORT_BUCKET/$repo/$branch/$task_start_time/$ecs_task_id/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
-aws s3 cp --acl bucket-owner-full-control  /playwright/results.json s3://$REPORT_BUCKET/$repo/$branch/$task_start_time/$ecs_task_id/ && echo "Copied report to s3 bucket"
+aws s3 cp --acl bucket-owner-full-control --recursive /playwright/test-results s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+aws s3 cp --acl bucket-owner-full-control --recursive /playwright/playwright-report s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
+aws s3 cp --acl bucket-owner-full-control  /playwright/results.json s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket"
 #aws s3 cp --acl bucket-owner-full-control  /playwright/helper/auth/userAuth.json s3://$REPORT_BUCKET/$repo/$branch/$task_start_time/$ecs_task_id/ && echo "Copied report to s3 bucket"
 
 finally
