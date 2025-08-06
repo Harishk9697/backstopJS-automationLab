@@ -3,6 +3,10 @@ set -e  # Exit the script if any command fails
 
 export TZ=UTC
 
+aws s3 cp --acl bucket-owner-full-control --recursive s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Script/aut-playwright-soar/ .
+
+ls
+
 run_command() {
     echo "Running: $1"
     eval $1
