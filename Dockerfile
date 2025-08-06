@@ -1,4 +1,4 @@
-## Use base image of playwright
+##Use base image of playwright
 FROM mcr.microsoft.com/playwright:v1.51.0-jammy
 
 
@@ -37,3 +37,4 @@ RUN curl -L -o ibm-aspera-connect.tar.gz "https://d3gcli72yxqn2z.cloudfront.net/
 
 ## Default command to execute test
 CMD ["./main_executor.sh"]
+
