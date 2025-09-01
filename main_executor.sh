@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e  # Exit the script if any command fails
 
 export TZ=UTC
