@@ -18,14 +18,10 @@ pwd
 #cd cloneRepos && echo "Changed to cloneRepos directory"
 #ls
 
-trap - ERR
 #pabot_cmd="pabot --processes 10 --outputdir reports --output output.xml -v Jeopardy_UserID:$SPT_Network_Gettv__AdminUser_Username -v Jeopardy_pswd:$SPT_Network_Gettv__AdminUser_psd -v Format_Reviewer_Username:$Format_Reviewer_Username -v Format_Reviewer_Password:$Format_Reviewer_Password -v Media_Editor_Username:$Media_Editor_Username -v Media_Editor_Password:$Media_Editor_Password -v Media_Reviewer_Username:$Media_Reviewer_Username -v Media_Reviewer_Password:$Media_Reviewer_Password -v Preview_editor_usename:$Preview_editor_usename -v preview_reviewer_password:$preview_reviewer_password -v preview_reviewer_username:$preview_reviewer_username -v preview_reviewer_username:$preview_reviewer_username -v Preview_editor_password:$Preview_editor_password -v Millionaire_PSWD:$Millionaire_PSWD -v ENV:$environment -v BROWSER:$browser"
 pabot_cmd="pabot --processes 5 --outputdir reports --output output.xml -v user_id:$SPT_Network_Gettv__ReviewerUser_Username -v pswd:'$SPT_Network_Gettv__ReviewerUser_psd' -v Jeopardy_UserID:$SPT_Network_Gettv__AdminUser_Username -v Jeopardy_pswd:$SPT_Network_Gettv__AdminUser_psd -v Kids_Editor_username:$SPT_Network_Kids_ReviewerUser_ID -v Kids_Editor_pswd:'$SPT_Network_Kids_ReviewerUser_psd' -v Editor_username:$SPT_Network_SetSounds_AdminUser_ID -v Editor_pswd:'$SPT_Network_SetSounds_AdminUser_pswd' -v Reviewer_username:$SPT_Network_SetSounds_ReviewerUser_ID -v Reviewer_pswd:'$SPT_Network_SetSounds_ReviewerUser_psd' -v ENV:$environment -v BROWSER:$browser"
 echo "$pabot_cmd"
 eval $pabot_cmd TestSuits/SPT_Network/Jeopardy.robot
-
-
-trap 'catch $? ${LINENO}' ERR
 
 #Fetch test case execution metadata
 export passed_testcases=$(xmlstarlet sel -t -v "/robot/statistics/total/stat[1]/@pass" /automation_Robot_app/reports/output.xml)
