@@ -19,4 +19,5 @@ RUN apk add --no-cache py3-pip && \
 RUN chmod +x main_executor.sh
 
 #Default command to execute test
-CMD ["./main_executor.sh"]
+CMD ["main_executor.sh"]
+
