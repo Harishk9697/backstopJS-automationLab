@@ -3,7 +3,7 @@ set -e  # Exit the script if any command fails
 
 export TZ=UTC
 
-aws s3 cp --acl bucket-owner-full-control --recursive s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Script/aut-playwright-soar/ .
+aws s3 cp --acl bucket-owner-full-control --recursive s3://tf-rf-scripts-spe-qaqc-bucket/SPTNetwork_RF/aut-rf-sptnetwork/ .
 
 report_folder_to_cleanup="report"
 # Clean up and create the report folder
