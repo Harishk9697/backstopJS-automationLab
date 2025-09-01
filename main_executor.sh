@@ -5,65 +5,43 @@ export TZ=UTC
 
 aws s3 cp --acl bucket-owner-full-control --recursive s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Script/aut-playwright-soar/ .
 
-ls
-
-run_command() {
-    echo "Running: $1"
-    eval $1
-    if [ $? -ne 0 ]; then
-        echo "Error: Command '$1' failed"
-       catch $exit_code ${LINENO}
-    fi
-}
-
-echo "change directory to playwright repo"
-#cd /playwright/cloneRepos && echo "Successfully changed the directory to cloneRepos directory" || echo "Unable to change the directory to cloneRepos directory"
-
-# Ping domain check
-echo "Checking connectivity to CloudFront domain..."
-ping_domain="d3gcli72yxqn2z.cloudfront.net"
-ping -c 4 $ping_domain && echo "Successfully pinged $ping_domain" || echo "Failed to ping $ping_domain"
-
-# Ensure the node_modules directory exists and set permissions if it does
-if [ -d "node_modules" ]; then
-    chmod -R a+x node_modules
-    echo "Permissions set for node_modules."
-else
-    echo "Warning: node_modules directory not found. Skipping chmod."
+report_folder_to_cleanup="report"
+# Clean up and create the report folder
+if [ -d "$report_folder_to_cleanup" ]; then
+    echo "Cleaning up folder $report_folder_to_cleanup"
+    rm -rf "$report_folder_to_cleanup"
 fi
-echo "list the files"
-ls -ltr
+mkdir "$report_folder_to_cleanup"
 
-echo "Current Playwright version is: $(npx playwright --version)"
-echo "Chrome Browser version is: $($(find /ms-playwright -type f -name "chrome") --version)"
-# Ensure the environment variable is set
-export PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-echo "PLAYWRIGHT_BROWSERS_PATH is set to: $PLAYWRIGHT_BROWSERS_PATH"
-run_command "npm cache clean --force"
-echo Installing dependencies...
+ls
+pwd
+#cd cloneRepos && echo "Changed to cloneRepos directory"
+#ls
 
-#AWS docker image uses 1.45 version. Keep playwright and playwright test to use less than 1.49 
-run_command "npm install playwright@1.51.0"                                          
-run_command "npm install -D @playwright/test@1.51.0 -y"
-run_command "npm install mammoth"
-npm list
-run_command "npx playwright install || true"
-run_command "npm install dotenv --save || true"
-run_command "npm install --save-dev cross-env || true"
-run_command "npm install xlsx-populate || true"
-run_command "npm install exceljs || true"
-run_command "npm install csv-parse || true"    
-run_command "npm install moment --save"
+trap - ERR
+#pabot_cmd="pabot --processes 10 --outputdir reports --output output.xml -v Jeopardy_UserID:$SPT_Network_Gettv__AdminUser_Username -v Jeopardy_pswd:$SPT_Network_Gettv__AdminUser_psd -v Format_Reviewer_Username:$Format_Reviewer_Username -v Format_Reviewer_Password:$Format_Reviewer_Password -v Media_Editor_Username:$Media_Editor_Username -v Media_Editor_Password:$Media_Editor_Password -v Media_Reviewer_Username:$Media_Reviewer_Username -v Media_Reviewer_Password:$Media_Reviewer_Password -v Preview_editor_usename:$Preview_editor_usename -v preview_reviewer_password:$preview_reviewer_password -v preview_reviewer_username:$preview_reviewer_username -v preview_reviewer_username:$preview_reviewer_username -v Preview_editor_password:$Preview_editor_password -v Millionaire_PSWD:$Millionaire_PSWD -v ENV:$environment -v BROWSER:$browser"
+pabot_cmd="pabot --processes 5 --outputdir reports --output output.xml -v user_id:$SPT_Network_Gettv__ReviewerUser_Username -v pswd:'$SPT_Network_Gettv__ReviewerUser_psd' -v Jeopardy_UserID:$SPT_Network_Gettv__AdminUser_Username -v Jeopardy_pswd:$SPT_Network_Gettv__AdminUser_psd -v Kids_Editor_username:$SPT_Network_Kids_ReviewerUser_ID -v Kids_Editor_pswd:'$SPT_Network_Kids_ReviewerUser_psd' -v Editor_username:$SPT_Network_SetSounds_AdminUser_ID -v Editor_pswd:'$SPT_Network_SetSounds_AdminUser_pswd' -v Reviewer_username:$SPT_Network_SetSounds_ReviewerUser_ID -v Reviewer_pswd:'$SPT_Network_SetSounds_ReviewerUser_psd' -v ENV:$environment -v BROWSER:$browser"
+echo "$pabot_cmd"
+eval $pabot_cmd TestSuits/SPT_Network/Jeopardy.robot
 
-echo "Running popup test"
-run_command "npm run awsTestpopup || true"
 
-echo "Playwright version is:"
-npx playwright --version
+trap 'catch $? ${LINENO}' ERR
 
-echo "list the files"
-ls -ltr
-aws s3 cp --acl bucket-owner-full-control --recursive /playwright/test-results s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
-aws s3 cp --acl bucket-owner-full-control --recursive /playwright/playwright-report s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
-aws s3 cp --acl bucket-owner-full-control  /playwright/results.json s3://tf-rf-scripts-spe-qaqc-bucket/SOAR_Report/ && echo "Copied report to s3 bucket"
-#aws s3 cp --acl bucket-owner-full-control  /playwright/helper/auth/userAuth.json s3://$REPORT_BUCKET/$repo/$branch/$task_start_time/$ecs_task_id/ && echo "Copied report to s3 bucket"
+#Fetch test case execution metadata
+export passed_testcases=$(xmlstarlet sel -t -v "/robot/statistics/total/stat[1]/@pass" /automation_Robot_app/reports/output.xml)
+export failed_testcases=$(xmlstarlet sel -t -v "/robot/statistics/total/stat[1]/@fail" /automation_Robot_app/reports/output.xml)
+export skipped_testcases=$(xmlstarlet sel -t -v "/robot/statistics/total/stat[1]/@skip" /automation_Robot_app/reports/output.xml)
+export tc_start_time=$(xmlstarlet sel -t -v "/robot/suite/status/@starttime" /automation_Robot_app/reports/output.xml)
+export tc_end_time=$(xmlstarlet sel -t -v "/robot/suite/status/@endtime" /automation_Robot_app/reports/output.xml)
+export total_testcases=$((passed_testcases+failed_testcases+skipped_testcases))
+export testcase_status=$( [ "$failed_testcases" -eq 0 ] && echo "success" || echo "failure" )
+
+echo "Passed test case: $passed_testcases"
+echo "Failed test case: $failed_testcases"
+echo "Skipped test case: $skipped_testcases"
+echo "Total Test case: $total_testcases"
+echo "Test case start time: $tc_start_time"
+echo "Test case end time: $tc_end_time"
+echo "Test Case Status: $testcase_status"
+
+aws s3 cp --acl bucket-owner-full-control  --recursive /automation_Robot_app/reports s3://tf-rf-scripts-spe-qaqc-bucket/SPTNetwork_RF_Report/ && echo "Copied report to s3 bucket" || echo "Copying report to s3 bucket failed"
