@@ -9,5 +9,3 @@ robotframework-requests
 robotframework-pabot
 autoit
 pyautoit
-cx_Oracle
-oracledb
